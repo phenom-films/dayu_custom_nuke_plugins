@@ -56,6 +56,20 @@ def find_icon(path):
     return icon if icon.isfile() else NUKE_DEFAULT_ICON
 
 
+def find_hotkey(path):
+    """
+    同层级下，同名的.hotkey 文件会被识别为hotkey
+    :param path:
+    :return:
+    """
+    hotkey_file = os.path.sep.join([os.path.dirname(path), os.path.basename(path).split('.')[0] + '.hotkey'])
+    if os.path.isfile(hotkey_file):
+        with open(hotkey_file, 'r') as f:
+            hotkey = f.read()
+            return hotkey if hotkey else ''
+    return ''
+
+
 class MatchFile(object):
 
     def __init__(self, file_name, pre_dir):
@@ -92,6 +106,7 @@ class MatchFile(object):
             icon_path = icon_path.child(sub)
             parent_menu = parent_menu.menu(sub)
             parent_menu.setIcon(find_icon(icon_path))
+            parent_menu.setShortcut(find_hotkey(icon_path))
 
 
 def file_filter(f):
