@@ -14,9 +14,6 @@ class Path(unicode):
     def __init__(self, path_string):
         super(Path, self).__init__(path_string)
 
-        self.isfile = partial(os.path.isfile, path_string)
-        self.isdir = partial(os.path.isdir, path_string)
-
     def isfile(self):
         return os.path.isfile(self)
 
