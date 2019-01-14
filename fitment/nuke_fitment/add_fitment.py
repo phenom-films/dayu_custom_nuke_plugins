@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 1/3/2019 11:27 AM
+
 __author__ = 'pengyuxuan'
 
 import os
 import traceback
 import types
-
-from unipath import DIRS, Path
+from path import Path
 
 # 启动
-# 1，在环境变量NUKE_PATH 中加上 my_fitment 根目录
-# 2，添加环境变量 MY_CUSTOM_FITMENT 指定为自定文件夹，各种脚本工具，放在此文件夹下
+# 1，在环境变量NUKE_PATH 中加上 nuke_fitment 根目录
+# 2，添加环境变量 MY_CUSTOM_FITMENT 指定为自定文件夹，各种脚本工具，放在此文件夹下,
 
+# 在 MY_CUSTOM_FITMENT 指定的文件夹下，必须有一个 名为 nuke 的文件夹，层级结构参考本项目跟目录下的 nuke 文件夹
 NUKE_FITMENT_ROOT_PATH = Path(os.environ.get('MY_CUSTOM_FITMENT', '')).child('nuke')
 
 # 根目录下的默认文件夹 NUKE_MAIN_MENU_DIR 中的文件是加载到nuke主菜单上
@@ -136,7 +136,7 @@ def add_fitment():
 
         #  main_menu 下的文件显示在主菜单上
         if main_menu_dir.isdir():
-            for dir in main_menu_dir.listdir(filter=DIRS):
+            for dir in main_menu_dir.listdir(file_filter=os.path.isdir):
                 parent = nuke_main_menu.addMenu(dir.name)
                 for match in dir.walk(filter=file_filter):
                     match_file = MatchFile(match, dir)
@@ -144,7 +144,7 @@ def add_fitment():
 
         #  nodes 下的文件生成在 toolbar 上
         if toolbar_menu_dir.isdir():
-            for dir in toolbar_menu_dir.listdir(filter=DIRS):
+            for dir in toolbar_menu_dir.listdir(file_filter=os.path.isdir):
                 parent = nuke_nodes_menu.addMenu(dir.name, find_icon(dir))
                 for match in dir.walk(filter=file_filter):
                     match_file = MatchFile(match, dir)
@@ -152,12 +152,12 @@ def add_fitment():
 
         #  加载 views 下的LUT文件
         if views_dir.isdir():
-            for file in views_dir.listdir(filter=lut_filter):
+            for file in views_dir.listdir(file_filter=lut_filter):
                 nuke.ViewerProcess.register(file.stem, nuke.createNode,
                                             ("Vectorfield", 'vfield_file %s' % file.replace('\\', '/')))
 
         refresh_menu = nuke_nodes_menu.addMenu('refresh', RELOAD_ICON)
-        refresh_command = refresh_menu.addCommand('reload', command=add_fitment, tooltip='refresh')
+        refresh_command = refresh_menu.addCommand('refresh', command=add_fitment, tooltip='refresh')
         refresh_command.setIcon(RELOAD_ICON)
 
     except Exception as e:
