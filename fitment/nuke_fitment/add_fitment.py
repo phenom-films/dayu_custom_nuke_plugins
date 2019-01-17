@@ -123,7 +123,9 @@ def add_fitment():
     import os
     import nuke
     nuke_main_menu = nuke.menu('Nuke')
+    dayu_main_menu = nuke_main_menu.addMenu('Dayu toolkit')
     nuke_nodes_menu = nuke.menu('Nodes')
+    dayu_nodes_menu = nuke_nodes_menu.addMenu('Dayu toolkit', icon=NUKE_DEFAULT_ICON)
 
     custom_path = os.environ.get('MY_CUSTOM_FITMENT', '')
     if not custom_path:
@@ -134,30 +136,26 @@ def add_fitment():
         toolbar_menu_dir = root_path.child(NUKE_TOOL_BAR_DIR)
         views_dir = root_path.child(NUKE_VIEWS_DIR)
 
-        #  main_menu 下的文件显示在主菜单上
-        if main_menu_dir.isdir():
-            for dir in main_menu_dir.listdir(file_filter=os.path.isdir):
-                parent = nuke_main_menu.addMenu(dir.name)
-                for match in dir.walk(filter=file_filter):
-                    match_file = MatchFile(match, dir)
-                    match_file.add_to_menu(parent)
-
-        #  nodes 下的文件生成在 toolbar 上
-        if toolbar_menu_dir.isdir():
-            for dir in toolbar_menu_dir.listdir(file_filter=os.path.isdir):
-                parent = nuke_nodes_menu.addMenu(dir.name, find_icon(dir))
-                for match in dir.walk(filter=file_filter):
-                    match_file = MatchFile(match, dir)
-                    match_file.add_to_menu(parent)
+        for root_dir, root_menu in [(main_menu_dir, dayu_main_menu), (toolbar_menu_dir, dayu_nodes_menu)]:
+            if root_dir.isdir():
+                root_menu.clearMenu()
+                for find_file in root_dir.listdir():
+                    if find_file.isdir():
+                        for match in find_file.walk(filter=file_filter):
+                            match_file = MatchFile(match, find_file.parent)
+                            match_file.add_to_menu(root_menu)
+                    elif file_filter(find_file):
+                        match_file = MatchFile(find_file, find_file.parent)
+                        match_file.add_to_menu(root_menu)
 
         #  加载 views 下的LUT文件
         if views_dir.isdir():
-            for file in views_dir.listdir(file_filter=lut_filter):
-                nuke.ViewerProcess.register(file.stem, nuke.createNode,
-                                            ("Vectorfield", 'vfield_file %s' % file.replace('\\', '/')))
+            for lut_file in views_dir.listdir(file_filter=lut_filter):
+                nuke.ViewerProcess.register(lut_file.stem, nuke.createNode,
+                                            ("Vectorfield", 'vfield_file %s' % lut_file.replace('\\', '/')))
 
-        refresh_menu = nuke_nodes_menu.addMenu('refresh', RELOAD_ICON)
-        refresh_command = refresh_menu.addCommand('refresh', command=add_fitment, tooltip='refresh')
+        # 刷新按钮
+        refresh_command = dayu_nodes_menu.addCommand('refresh', command=add_fitment, tooltip='refresh', index=-1)
         refresh_command.setIcon(RELOAD_ICON)
 
     except Exception as e:
