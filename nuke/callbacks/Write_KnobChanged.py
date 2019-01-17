@@ -20,7 +20,7 @@ def _auto_rename(node, knob):
         try:
             nk_file = nuke.scriptName()
         except RuntimeError as e:
-            nuke.alert(e.message)
+            nuke.message(e.message)
         return nk_file
 
     ext_value = node['dayu_write_ext_list'].value()
