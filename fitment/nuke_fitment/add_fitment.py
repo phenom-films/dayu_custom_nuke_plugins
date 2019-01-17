@@ -7,7 +7,7 @@ import os
 import traceback
 import types
 from path import Path
-
+from image_rc import *
 # 启动
 # 1，在环境变量NUKE_PATH 中加上 nuke_fitment 根目录
 # 2，添加环境变量 MY_CUSTOM_FITMENT 指定为自定文件夹，各种脚本工具，放在此文件夹下,
@@ -23,7 +23,7 @@ NUKE_TOOL_BAR_DIR = 'nodes'
 NUKE_VIEWS_DIR = 'views'
 
 # 默认工具的图标，和图标格式
-NUKE_DEFAULT_ICON = Path(__file__).parent.child('default.png')
+NUKE_DEFAULT_ICON = ':/default.png'
 RELOAD_ICON = Path(__file__).parent.child('refresh.png')
 NUKE_ICON_EXT = '.png'
 
