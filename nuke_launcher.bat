@@ -7,5 +7,5 @@ cd %ProgramFiles%
 for /d %%i in (nuke*) do ( set dirname=%%i )
 cd %dirname%
 for  %%i in (nuke*.exe) do ( set exename=%%i )
-%exename%
+%exename% --nukex
 
