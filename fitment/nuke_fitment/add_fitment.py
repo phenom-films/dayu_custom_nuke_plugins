@@ -8,12 +8,6 @@ import traceback
 import types
 from path import Path
 from image_rc import *
-# 启动
-# 1，在环境变量NUKE_PATH 中加上 nuke_fitment 根目录
-# 2，添加环境变量 MY_CUSTOM_FITMENT 指定为自定文件夹，各种脚本工具，放在此文件夹下,
-
-# 在 MY_CUSTOM_FITMENT 指定的文件夹下，必须有一个 名为 nuke 的文件夹，层级结构参考本项目跟目录下的 nuke 文件夹
-NUKE_FITMENT_ROOT_PATH = Path(os.environ.get('MY_CUSTOM_FITMENT', '')).child('nuke')
 
 # 根目录下的默认文件夹 NUKE_MAIN_MENU_DIR 中的文件是加载到nuke主菜单上
 # NUKE_TOOL_BAR_DIR 中的文件是加载到 nuke 的 toolbar 上
@@ -110,11 +104,13 @@ class MatchFile(object):
 
 
 def file_filter(f):
+    """可识别的文件类型"""
     if f.isfile() and f.name != '__init__.py' and f.ext in ['.py', '.nk', '.gizmo', '.dll', '.dylib', '.so']:
         return True
 
 
 def lut_filter(f):
+    """可识别的LUT文件类型"""
     if f.isfile() and f.ext in ['.3dl', '.blut', '.cms', '.csp', '.cub', '.cube', '.vf', 'vfz']:
         return True
 
@@ -131,7 +127,7 @@ def add_fitment():
     if not custom_path:
         return
     try:
-        root_path = Path(custom_path).child('nuke')
+        root_path = Path(custom_path)
         main_menu_dir = root_path.child(NUKE_MAIN_MENU_DIR)
         toolbar_menu_dir = root_path.child(NUKE_TOOL_BAR_DIR)
         views_dir = root_path.child(NUKE_VIEWS_DIR)
